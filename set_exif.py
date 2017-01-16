@@ -57,7 +57,7 @@ def run(root):
                                          float(data['longitude']))
                     opts += tag_opts(data['keywords'])
                     opts += tag_opts(data['albums'])
-                    opts += rating_opts(int(data['rating']))
+                    opts += rating_opts(int(data['rating'] or 0))
                     if len(opts) != 0:
                         exec_opts(opts +
                                   ['-overwrite_original_in_place', '-P'], img_file)
