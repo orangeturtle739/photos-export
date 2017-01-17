@@ -10,6 +10,21 @@ import uuid
 import shutil
 from libxmp import XMPFiles
 
+global count
+
+def gen_name():
+    count = 0
+    while True:
+        path = yield
+        original_name = os.path.splitext(
+            os.path.basename(path))[0]
+        name = '%s_%010d' % (original_name.replace(' ','_'), count)
+        count += 1
+        yield name
+
+def next_name(path, namer):
+    next(namer)
+    return namer.send(path)
 
 def run(lib_dir, output_dir):
     db_path = os.path.join(lib_dir, 'database')
@@ -35,7 +50,8 @@ def run(lib_dir, output_dir):
     c.execute('SELECT COUNT(*) from RKMaster')
     (number_of_rows,) = c.fetchone()
     c.execute('SELECT * FROM RKMaster')
-    count = 0
+
+    namer = gen_name()
     bar = progressbar.ProgressBar(max_value=number_of_rows)
     for master in bar(iter(c.fetchone, None)):
         master_uuid = master['uuid']
@@ -115,8 +131,7 @@ def run(lib_dir, output_dir):
                 master_rating = rating
             else:
                 for foo in edited_path:
-                    iuuid = '%s_%010d' % count
-                    count += 1
+                    iuuid = next_name(foo, namer)
                     edited_paths += [{'path': foo,
                                       'albums': list(albums),
                                       'keywords': list(keywords),
@@ -125,8 +140,7 @@ def run(lib_dir, output_dir):
                                       'in_library': True}]
 
         master_in_library = (unadjusted_count != 0)
-        iuuid = '%s_%010d' % count
-        count += 1
+        iuuid = next_name(master_path, namer)
 
         base_data = {'latitude': latitude, 'longitude': longitude}
         master_data = {
