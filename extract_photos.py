@@ -12,19 +12,22 @@ from libxmp import XMPFiles
 
 global count
 
+
 def gen_name():
     count = 0
     while True:
         path = yield
         original_name = os.path.splitext(
             os.path.basename(path))[0]
-        name = '%s_%010d' % (original_name.replace(' ','_'), count)
+        name = '%s_%010d' % (original_name.replace(' ', '_'), count)
         count += 1
         yield name
+
 
 def next_name(path, namer):
     next(namer)
     return namer.send(path)
+
 
 def run(lib_dir, output_dir):
     db_path = os.path.join(lib_dir, 'database')
