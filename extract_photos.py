@@ -25,9 +25,6 @@ def run(lib_dir, output_dir):
             edited_index[
                 os.path.basename(subdir)] = os.path.join(
                 subdir, images[0])
-    # print(edited_index)
-    # print(main_db_path)
-    # print(proxy_db_path)
 
     main_db = sqlite3.connect(main_db_path)
     main_db.row_factory = sqlite3.Row
@@ -38,7 +35,7 @@ def run(lib_dir, output_dir):
     c.execute('SELECT COUNT(*) from RKMaster')
     (number_of_rows,) = c.fetchone()
     c.execute('SELECT * FROM RKMaster')
-    uuids = {}
+    count = 0
     bar = progressbar.ProgressBar(max_value=number_of_rows)
     for master in bar(iter(c.fetchone, None)):
         master_uuid = master['uuid']
@@ -118,7 +115,8 @@ def run(lib_dir, output_dir):
                 master_rating = rating
             else:
                 for foo in edited_path:
-                    iuuid = str(uuid.uuid4())
+                    iuuid = '%s_%010d' % count
+                    count += 1
                     edited_paths += [{'path': foo,
                                       'albums': list(albums),
                                       'keywords': list(keywords),
@@ -127,7 +125,8 @@ def run(lib_dir, output_dir):
                                       'in_library': True}]
 
         master_in_library = (unadjusted_count != 0)
-        iuuid = str(uuid.uuid4())
+        iuuid = '%s_%010d' % count
+        count += 1
 
         base_data = {'latitude': latitude, 'longitude': longitude}
         master_data = {
