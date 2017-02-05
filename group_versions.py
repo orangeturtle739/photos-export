@@ -9,15 +9,10 @@ import sqlite3
 import glob
 from dateutil import parser
 
-# edited original 2
+# Digikam format
+# edited_id original_id 2
 
-
-def date_filter(lst):
-    for thing in lst:
-        try:
-            dt = parser.parse(thing)
-        except (ValueError):
-            yield thing
+# Determine the ID of an image in the Digikam database
 
 
 def image_id(db, name):
@@ -27,6 +22,8 @@ def image_id(db, name):
     if len(rows) != 1:
         raise RuntimeError('Too many matches for "%s": %i' % (name, len(rows)))
     return rows[0]['id']
+
+# Run on the output folder (should be the root digikam folder)
 
 
 def run(root):
@@ -61,5 +58,6 @@ def run(root):
     db.commit()
     db.close()
 
+# Usage: ./group_version.py <digikam_dir>
 if __name__ == '__main__':
     run(sys.argv[1])
