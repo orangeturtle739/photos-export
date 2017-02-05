@@ -31,24 +31,29 @@ This program worked on the database format around 2016-08. Apple has since chang
 The program operates in distinct phases, which can all be run independently:
 
 * Extraction: the program reads the Photos database, and copies all the files and metadata to a new folder. All the metadata is stored in JSON sidecar files. Done in [`extract_photos.py`](extract_photos.py). Run as:
+
   ```shell
   $ ./extract_photos.py <foo.photoslibrary> <output_dir>
   ```
 * Clean albums: lots of my albums were simply dates. I didn't like that because that didn't add much information; each photo had a date already. The [`clean_albums.py`](clean_albums.py) processes all the JSON sidecar files created during the extraction process and removes any albums that are only a date. Run as:
+
   ```shell
   $ ./clean_albums.py <output_dir>
   ```
 * Set EXIF: copies all the data from the JSON sidecar files into the EXIF fields of the image. Run as:
+
   ```shell
   $ ./set_exif.py <output_dir>
   ```
 * Group versions: the script is digikam specific. Before running this script, import the photos into digikam. Launch digikam at least once, then close it. Then, run this script to write all the photo version and edit information into digikam's database so digikam can group edited photos.
 Run as:
+
   ```shell
   $ ./group_versions.py <output_dir>
   ```
 
 To run all the phases together (except for group photos), run:
+
 ```shell
 $ ./photos_export.py <foo.photoslibrary> <output_dir>
 ```
