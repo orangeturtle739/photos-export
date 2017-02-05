@@ -61,4 +61,4 @@ $ ./photos_export.py <foo.photoslibrary> <output_dir>
 All the scripts have nice progress bars.
 
 ## Contributing
-If you find any bug, or there is something you would like added, your best bet is to try to patch it yourself and open a pull request. I don't have many photos libraries to test on, so your library is probably the only way to test.
+If you find a bug, or there is something you would like added, your best bet is to try to patch it yourself and open a pull request. I don't have many photos libraries to test on, so your library is probably the only way to test.
