@@ -12,6 +12,8 @@ from libxmp import XMPFiles
 
 global count
 
+# Generates a unique suffix
+
 
 def gen_name():
     count = 0
@@ -23,10 +25,15 @@ def gen_name():
         count += 1
         yield name
 
+# Generates a unique suffix
+
 
 def next_name(path, namer):
     next(namer)
     return namer.send(path)
+
+# Does the export process, copying photos from lib_dir to output_dir
+# with all metadata in a sidecar JSON
 
 
 def run(lib_dir, output_dir):
@@ -161,7 +168,7 @@ def run(lib_dir, output_dir):
 
         # Export!
         base_export_path = os.path.join(output_dir, iuuid)
-        # Hard link the master
+        # Copy the master
         shutil.copy2(
             master_path,
             os.path.join(
@@ -178,7 +185,7 @@ def run(lib_dir, output_dir):
                             **master_data),
                         derived_from=None)),
                 file=log_file)
-        # Hard link the edits
+        # Copy the edits
         edit_export_path = os.path.join(base_export_path, 'edited')
         for edit_info in edited_paths:
             shutil.copy2(
@@ -199,5 +206,6 @@ def run(lib_dir, output_dir):
                             derived_from=iuuid)),
                     file=log_file)
 
+# Usage: ./extract_photos.py <photo_library> <output_dir>
 if __name__ == '__main__':
     run(sys.argv[1], sys.argv[2])
