@@ -18,5 +18,6 @@ def run(lib_dir, output_dir):
     output('Setting EXIF metadata')
     set_exif.run(output_dir)
 
+# Usage: ./photos_export.py <photo_library> <output_dir>
 if __name__ == '__main__':
     run(sys.argv[1], sys.argv[2])
