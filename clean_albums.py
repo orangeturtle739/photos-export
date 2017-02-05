@@ -27,5 +27,7 @@ def run(root):
                 with open(os.path.join(root, f), 'w') as output:
                     print(json.dumps(data), file=output)
 
+# Usage: ./clean_albums.py <export_dir>
+# Removes all albums whose names are just dates
 if __name__ == '__main__':
     run(sys.argv[1])
