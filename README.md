@@ -25,6 +25,7 @@ pictures in it while preserving:
 * Ratings
 * Edits (exports the original and all edits for each image)
 
+The program writes as much metadata as it can directly into the images using EXIF. (See http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/XMP.html for information about supported tags.)
 This program worked on the database format around 2016-08. Apple has since changed the naming of some files, and this script no longer works, though it might with some small fixes. I do not have access to the new format, so I can't test it. However, feel free to update it and open a pull request!
 
 The program is operated into distinct phases, which can all be run independently:

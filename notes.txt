@@ -1,2 +1,0 @@
-Metadata: http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/XMP.html
-PyExifTool: https://github.com/smarnach/pyexiftool
