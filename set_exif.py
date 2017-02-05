@@ -6,6 +6,9 @@ import sys
 import progressbar
 import os
 
+# Copies metadata from the sidecar JSON into the file EXIF
+# Copies: GPS data, rating, and albums and keywords (as tags)
+
 
 def run(root):
     with exiftool.ExifTool() as et:
@@ -62,5 +65,6 @@ def run(root):
                         exec_opts(opts +
                                   ['-overwrite_original_in_place', '-P'], img_file)
 
+# Usage: ./set_exif.py <output_dir>
 if __name__ == '__main__':
     run(sys.argv[1])
