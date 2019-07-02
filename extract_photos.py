@@ -38,31 +38,36 @@ def next_name(path, namer):
 
 def run(lib_dir, output_dir):
     db_path = os.path.join(lib_dir, 'database')
-    main_db_path = os.path.join(db_path, 'Library.apdb')
-    proxy_db_path = os.path.join(db_path, 'ImageProxies.apdb')
-    edited_root = os.path.join(lib_dir, 'resources', 'modelresources')
-    edited_index = {}
-    for subdir, dirs, files in os.walk(edited_root):
-        for f in files:
-            images = os.listdir(subdir)
-            if len(images) != 1:
-                print('Error! "%s" should contain 1 image.', images)
-            edited_index[
-                os.path.basename(subdir)] = os.path.join(
-                subdir, images[0])
-
+    main_db_path = os.path.join(db_path, 'photos.db')
+    proxy_db_path = os.path.join(db_path, 'photos.db')
+    
     main_db = sqlite3.connect(main_db_path)
     main_db.row_factory = sqlite3.Row
     proxy_db = sqlite3.connect(proxy_db_path)
     proxy_db.row_factory = sqlite3.Row
+
+    namer = gen_name()
+
+    # Map below doesn't seem to exist anymore. Leaving this here in case someone finds it.
+    
+    #edited_root = os.path.join(lib_dir, 'resources', 'modelresources')
+    #edited_index = {}
+    #for subdir, dirs, files in os.walk(edited_root):
+    #    for f in files:
+    #        images = os.listdir(subdir)
+    #        if len(images) != 1:
+    #            print('Error! "%s" should contain 1 image.', images)
+    #        edited_index[
+    #            os.path.basename(subdir)] = os.path.join(
+    #            subdir, images[0])
 
     c = main_db.cursor()
     c.execute('SELECT COUNT(*) from RKMaster')
     (number_of_rows,) = c.fetchone()
     c.execute('SELECT * FROM RKMaster')
 
-    namer = gen_name()
-    bar = progressbar.ProgressBar(max_value=number_of_rows)
+    bar = progressbar.ProgressBar(maxval=number_of_rows)
+    
     for master in bar(iter(c.fetchone, None)):
         master_uuid = master['uuid']
         master_path = os.path.join(lib_dir, 'Masters', master['imagePath'])
@@ -88,7 +93,9 @@ def run(lib_dir, output_dir):
                         if len(edited_path) != 0:
                             pass
                             # print("Warning! Multiple valid edits!")
-                        edited_path += [edited_index[resource['resourceUuid']]]
+
+                        # Seems to not be a thing anymore with Apple Photos
+                        #edited_path += [edited_index[resource['resourceUuid']]]
             else:
                 unadjusted_count += 1
                 is_master = True
@@ -166,45 +173,51 @@ def run(lib_dir, output_dir):
             # print("Warning! %d unadjusted images!" % unadjusted_count)
             pass
 
-        # Export!
-        base_export_path = os.path.join(output_dir, iuuid)
-        # Copy the master
-        shutil.copy2(
-            master_path,
-            os.path.join(
-                output_dir,
-                iuuid +
-                os.path.splitext(master_path)[1].lower()))
-        # Write the data
-        with open(os.path.join(output_dir, '%s.json' % iuuid), 'w') as log_file:
-            print(
-                json.dumps(
-                    dict(
-                        dict(
-                            base_data,
-                            **master_data),
-                        derived_from=None)),
-                file=log_file)
-        # Copy the edits
-        edit_export_path = os.path.join(base_export_path, 'edited')
-        for edit_info in edited_paths:
+        if os.path.isfile(master_path):
+            # Export!
+            base_export_path = os.path.join(output_dir, iuuid)
+            # Copy the master
             shutil.copy2(
-                edit_info['path'],
+                master_path,
                 os.path.join(
                     output_dir,
-                    '%s%s' %
-                    (edit_info['uuid'],
-                     os.path.splitext(
-                        edit_info['path'])[1].lower())))
-            with open(os.path.join(output_dir, '%s.json' % edit_info['uuid']), 'w') as log_file:
+                    iuuid +
+                    os.path.splitext(master_path)[1].lower()))
+            # Write the data
+            with open(os.path.join(output_dir, '%s.json' % iuuid), 'w') as log_file:
                 print(
                     json.dumps(
                         dict(
                             dict(
                                 base_data,
-                                **edit_info),
-                            derived_from=iuuid)),
+                                **master_data),
+                            derived_from=None)),
                     file=log_file)
+            # Copy the edits
+            edit_export_path = os.path.join(base_export_path, 'edited')
+            for edit_info in edited_paths:
+                shutil.copy2(
+                    edit_info['path'],
+                    os.path.join(
+                        output_dir,
+                        '%s%s' %
+                        (edit_info['uuid'],
+                        os.path.splitext(
+                            edit_info['path'])[1].lower())))
+                with open(os.path.join(output_dir, '%s.json' % edit_info['uuid']), 'w') as log_file:
+                    print(
+                        json.dumps(
+                            dict(
+                                dict(
+                                    base_data,
+                                    **edit_info),
+                                derived_from=iuuid)),
+                        file=log_file)
+
+    main_db.close()
+    proxy_db.close()
+
+
 
 # Usage: ./extract_photos.py <photo_library> <output_dir>
 if __name__ == '__main__':
