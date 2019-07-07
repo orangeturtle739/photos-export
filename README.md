@@ -26,7 +26,7 @@ pictures in it while preserving:
 * Edits (exports the original and all edits for each image)
 
 The program writes as much metadata as it can directly into the images using EXIF. (See http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/XMP.html for information about supported tags.)
-This program worked on the database format around 2016-08. Apple has since changed the naming of some files, and this script no longer works, though it might with some small fixes. I do not have access to the new format, so I can't test it. However, feel free to update it and open a pull request!
+This program worked on the database format around 2019-07, Apple Photos version 4.0 .
 
 The program operates in distinct phases, which can all be run independently:
 
@@ -50,6 +50,11 @@ Run as:
 
   ```shell
   $ ./group_versions.py <output_dir>
+  ```
+
+* Album folders: copy all photo's in folders according to the albums they are in. If a photo is in two different albums, it will be copied in two different folders, each folder with the name of the album. Run as:
+  ```shell
+  $ ./album_folder.py <source_dir> <output_dir>
   ```
 
 To run all the phases together (except for group photos), run:
