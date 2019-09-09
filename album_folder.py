@@ -5,6 +5,7 @@ import progressbar
 import os
 import sys
 from shutil import copyfile
+from argparse import ArgumentParser
 
 def run(source_dir, output_dir):
     bar = progressbar.ProgressBar()
@@ -21,10 +22,22 @@ def run(source_dir, output_dir):
                     imagename = data['path'].split(os.sep)[-1]
                     imagedestination = os.path.join(output_dir, album, imagename)
 
-                    copyfile(imagesource, imagedestination)
+                    if not args.move:
+                        copyfile(imagesource, imagedestination)
+                    else:
+                        move(imagesource, imagedestination)
+
 
 # Usage: ./album_folder <source_dir> <output_dir>
 # Copies all files from source_dir to a folder-based map structure in output_dir
 # Useful for programs like Plex, who expect a folder-based structure for pictures
 if __name__ == '__main__':
-    run(sys.argv[1], sys.argv[2])
+
+    # Options parsed from command line
+    parser = ArgumentParser()
+    parser.add_argument("--move", action="store_true", default=False, help='Defines if the file is to move or copy from SourceDir to DestDir')
+    parser.add_argument('source_dir', help='Source from where the photos will be processed')
+    parser.add_argument('output_dir', help='Destination dir of the photos')
+    args = parser.parse_args()
+
+    run(args.source_dir, args.output_dir)
