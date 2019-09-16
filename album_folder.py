@@ -52,7 +52,7 @@ def run(source_dir, output_dir):
                     if os.path.exists(imagesource):  # let's not consider the photo was exported or will raise an exception
                         if args.verbose:
                             print("Moving : ", imagesource, " -> ", imagedestination)
-                        #move(imagesource, imagedestination)       # this is the last album, so, move the file
+                        move(imagesource, imagedestination)       # this is the last album, so, move the file
                         num_of_moved += 1
                     else:
                         if args.verbose:
@@ -72,7 +72,7 @@ def run(source_dir, output_dir):
                             if os.path.exists(imagesource):                                    # let's not consider the photo was exported or will raise an exception
                                 if args.verbose:
                                     print("Moving : ", imagesource, " -> ", imagedestination)
-                                #move(imagesource, imagedestination)       # this is the last album, so, move the file
+                                move(imagesource, imagedestination)       # this is the last album, so, move the file
                                 num_of_moved +=1
                             else:
                                 if args.verbose:
@@ -81,7 +81,7 @@ def run(source_dir, output_dir):
                         else:
                             if args.verbose:
                                 print("\tCopying: ", imagesource, " -> ", imagedestination)
-                            #copyfile(imagesource, imagedestination)   # temporary commented, until tested it all right, no copies, no moves.
+                            copyfile(imagesource, imagedestination)   # temporary commented, until tested it all right, no copies, no moves.
                             album_counter += 1
                             num_of_copied += 1
 
