@@ -6,6 +6,7 @@ import os
 import sys
 from shutil import copyfile
 
+
 def run(source_dir, output_dir):
     bar = progressbar.ProgressBar()
     for f in bar(os.listdir(source_dir)):
@@ -19,12 +20,14 @@ def run(source_dir, output_dir):
 
                     imagesource = data['path']
                     imagename = data['path'].split(os.sep)[-1]
-                    imagedestination = os.path.join(output_dir, album, imagename)
+                    imagedestination = os.path.join(
+                        output_dir, album, imagename)
 
                     copyfile(imagesource, imagedestination)
 
 # Usage: ./album_folder <source_dir> <output_dir>
 # Copies all files from source_dir to a folder-based map structure in output_dir
-# Useful for programs like Plex, who expect a folder-based structure for pictures
+# Useful for programs like Plex, who expect a folder-based structure for
+# pictures
 if __name__ == '__main__':
     run(sys.argv[1], sys.argv[2])

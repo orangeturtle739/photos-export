@@ -40,7 +40,7 @@ def run(lib_dir, output_dir):
     db_path = os.path.join(lib_dir, 'database')
     main_db_path = os.path.join(db_path, 'photos.db')
     proxy_db_path = os.path.join(db_path, 'photos.db')
-    
+
     main_db = sqlite3.connect(main_db_path)
     main_db.row_factory = sqlite3.Row
     proxy_db = sqlite3.connect(proxy_db_path)
@@ -48,11 +48,12 @@ def run(lib_dir, output_dir):
 
     namer = gen_name()
 
-    # Map below doesn't seem to exist anymore. Leaving this here in case someone finds it.
-    
+    # Map below doesn't seem to exist anymore. Leaving this here in case
+    # someone finds it.
+
     #edited_root = os.path.join(lib_dir, 'resources', 'modelresources')
     #edited_index = {}
-    #for subdir, dirs, files in os.walk(edited_root):
+    # for subdir, dirs, files in os.walk(edited_root):
     #    for f in files:
     #        images = os.listdir(subdir)
     #        if len(images) != 1:
@@ -67,7 +68,7 @@ def run(lib_dir, output_dir):
     c.execute('SELECT * FROM RKMaster')
 
     bar = progressbar.ProgressBar(maxval=number_of_rows)
-    
+
     for master in bar(iter(c.fetchone, None)):
         master_uuid = master['uuid']
         master_path = os.path.join(lib_dir, 'Masters', master['imagePath'])
@@ -204,7 +205,6 @@ def run(lib_dir, output_dir):
 
     main_db.close()
     proxy_db.close()
-
 
 
 # Usage: ./extract_photos.py <photo_library> <output_dir>
