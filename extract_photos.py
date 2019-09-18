@@ -161,7 +161,7 @@ def run(lib_dir, output_dir):
             'in_library': master_in_library,
             'albums': list(master_albums),
             'keywords': list(master_keywords),
-            'rating': master_rating
+            'rating': master_rating,
             'latitude': latitude,
             'longitude': longitude}
         # print(edited_paths)
