@@ -13,6 +13,7 @@ from shutil import move
 # Source_dir : passed as parameter, where your photos are located
 # output_dir : directory under where all albuns will be created
 
+
 def run(source_dir, output_dir):
     bar = progressbar.ProgressBar()
 
@@ -95,7 +96,8 @@ def run(source_dir, output_dir):
 
 # Usage: ./album_folder <source_dir> <output_dir>
 # Copies all files from source_dir to a folder-based map structure in output_dir
-# Useful for programs like Plex, who expect a folder-based structure for pictures
+# Useful for programs like Plex, who expect a folder-based structure for
+# pictures
 if __name__ == '__main__':
 
     # Options parsed from command line
