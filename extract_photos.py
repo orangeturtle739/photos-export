@@ -40,7 +40,7 @@ def run(lib_dir, output_dir):
     db_path = os.path.join(lib_dir, 'database')
     main_db_path = os.path.join(db_path, 'photos.db')
     proxy_db_path = os.path.join(db_path, 'photos.db')
-    
+
     main_db = sqlite3.connect(main_db_path)
     main_db.row_factory = sqlite3.Row
     proxy_db = sqlite3.connect(proxy_db_path)
@@ -48,11 +48,12 @@ def run(lib_dir, output_dir):
 
     namer = gen_name()
 
-    # Map below doesn't seem to exist anymore. Leaving this here in case someone finds it.
-    
+    # Map below doesn't seem to exist anymore. Leaving this here in case
+    # someone finds it.
+
     #edited_root = os.path.join(lib_dir, 'resources', 'modelresources')
     #edited_index = {}
-    #for subdir, dirs, files in os.walk(edited_root):
+    # for subdir, dirs, files in os.walk(edited_root):
     #    for f in files:
     #        images = os.listdir(subdir)
     #        if len(images) != 1:
@@ -67,7 +68,7 @@ def run(lib_dir, output_dir):
     c.execute('SELECT * FROM RKMaster')
 
     bar = progressbar.ProgressBar(maxval=number_of_rows)
-    
+
     for master in bar(iter(c.fetchone, None)):
         master_uuid = master['uuid']
         master_path = os.path.join(lib_dir, 'Masters', master['imagePath'])
@@ -100,14 +101,8 @@ def run(lib_dir, output_dir):
                 unadjusted_count += 1
                 is_master = True
 
-            new_latitude = version['latitude']
-            new_longitude = version['longitude']
-            if latitude is None or longitude is None:
-                latitude = new_latitude
-                longitude = new_longitude
-            elif abs((new_latitude or 100000) - latitude) > 0.00001 and abs((new_longitude or 100000) - longitude) > 0.00001:
-                print("Inconsistent location: (%f, %f) -> (%f, %f)" %
-                      (latitude, longitude, new_latitude, new_longitude))
+            latitude = version['latitude']
+            longitude = version['longitude']
 
             kc = main_db.cursor()
             kc.execute('SELECT * FROM RKAlbumVersion WHERE versionId=?',
@@ -154,20 +149,22 @@ def run(lib_dir, output_dir):
                                       'keywords': list(keywords),
                                       'rating': rating,
                                       'uuid': iuuid,
-                                      'in_library': True}]
+                                      'in_library': True,
+                                      'latitude': latitude,
+                                      'longitude': longitude}]
 
         master_in_library = (unadjusted_count != 0)
         iuuid = next_name(master_path, namer)
 
-        base_data = {'latitude': latitude, 'longitude': longitude}
         master_data = {
             'uuid': iuuid,
             'path': master_path,
             'in_library': master_in_library,
             'albums': list(master_albums),
             'keywords': list(master_keywords),
-            'rating': master_rating}
-        # print(dict(base_data, **master_data))
+            'rating': master_rating,
+            'latitude': latitude,
+            'longitude': longitude}
         # print(edited_paths)
         if unadjusted_count != 0 and unadjusted_count != 1:
             # print("Warning! %d unadjusted images!" % unadjusted_count)
@@ -187,11 +184,7 @@ def run(lib_dir, output_dir):
             with open(os.path.join(output_dir, '%s.json' % iuuid), 'w') as log_file:
                 print(
                     json.dumps(
-                        dict(
-                            dict(
-                                base_data,
-                                **master_data),
-                            derived_from=None)),
+                        dict(master_data, derived_from=None)),
                     file=log_file)
             # Copy the edits
             edit_export_path = os.path.join(base_export_path, 'edited')
@@ -202,21 +195,16 @@ def run(lib_dir, output_dir):
                         output_dir,
                         '%s%s' %
                         (edit_info['uuid'],
-                        os.path.splitext(
+                         os.path.splitext(
                             edit_info['path'])[1].lower())))
                 with open(os.path.join(output_dir, '%s.json' % edit_info['uuid']), 'w') as log_file:
                     print(
                         json.dumps(
-                            dict(
-                                dict(
-                                    base_data,
-                                    **edit_info),
-                                derived_from=iuuid)),
+                            dict(edit_info, derived_from=iuuid)),
                         file=log_file)
 
     main_db.close()
     proxy_db.close()
-
 
 
 # Usage: ./extract_photos.py <photo_library> <output_dir>
