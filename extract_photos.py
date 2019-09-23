@@ -3,12 +3,9 @@
 import sys
 import os
 import sqlite3
-import hashlib
 import json
 import progressbar
-import uuid
 import shutil
-from libxmp import XMPFiles
 
 global count
 
@@ -77,6 +74,11 @@ def run(lib_dir, output_dir):
         master_albums = set([])
         master_keywords = set([])
         master_rating = None
+
+        # ignore image if it is in trash
+        if master['isInTrash']:
+            continue
+
         vc = main_db.cursor()
         vc.execute('SELECT * FROM RKVersion WHERE masterUuid=?', [master_uuid])
         edited_paths = []
@@ -84,6 +86,11 @@ def run(lib_dir, output_dir):
         for version in iter(vc.fetchone, None):
             edited_path = []
             is_master = False
+
+            # ignore if version was deleted of Library
+            if version['isInTrash'] == 1:
+                continue
+
             if version['adjustmentUuid'] != 'UNADJUSTEDNONRAW':
                 ac = proxy_db.cursor()
                 ac.execute('SELECT * FROM RKModelResource WHERE resourceTag=?',
@@ -124,7 +131,7 @@ def run(lib_dir, output_dir):
             wc.execute(
                 'SELECT * FROM RKKeywordForVersion WHERE versionId=?', [version['modelId']])
             keywords = set([])
-            for keyword_id in iter(kc.fetchone, None):
+            for keyword_id in iter(wc.fetchone, None):
                 klc = main_db.cursor()
                 klc.execute('SELECT * FROM RKKeyword WHERE modelId=?',
                             [keyword_id['keywordId']])
