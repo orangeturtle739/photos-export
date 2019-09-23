@@ -73,6 +73,11 @@ def run(lib_dir, output_dir):
         master_albums = set([])
         master_keywords = set([])
         master_rating = None
+
+        # ignore image if it is in trash
+        if master['isInTrash']:
+            continue
+
         vc = main_db.cursor()
         vc.execute('SELECT * FROM RKVersion WHERE masterUuid=?', [master_uuid])
         edited_paths = []
