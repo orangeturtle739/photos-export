@@ -9,6 +9,7 @@ import shutil
 
 global count
 
+
 # Generates a unique suffix
 
 
@@ -22,12 +23,14 @@ def gen_name():
         count += 1
         yield name
 
+
 # Generates a unique suffix
 
 
 def next_name(path, namer):
     next(namer)
     return namer.send(path)
+
 
 # Does the export process, copying photos from lib_dir to output_dir
 # with all metadata in a sidecar JSON
@@ -45,11 +48,11 @@ def run(lib_dir, output_dir):
 
     namer = gen_name()
 
-    # Map below doesn't seem to exist anymore. Leaving this here in case
-    # someone finds it.
+    # Map below doesn't seem to exist anymore. Leaving this here in case someone finds it.
 
-    #edited_root = os.path.join(lib_dir, 'resources', 'modelresources')
-    #edited_index = {}
+    # edited_root = os.path.join(lib_dir, 'resources', 'modelresources')
+    # edited_index = {}
+
     # for subdir, dirs, files in os.walk(edited_root):
     #    for f in files:
     #        images = os.listdir(subdir)
@@ -97,13 +100,13 @@ def run(lib_dir, output_dir):
                            [version['adjustmentUuid']])
                 for resource in iter(ac.fetchone, None):
                     if resource['attachedModelType'] == 2 and resource[
-                            'resourceType'] == 4:
+                        'resourceType'] == 4:
                         if len(edited_path) != 0:
                             pass
                             # print("Warning! Multiple valid edits!")
 
                         # Seems to not be a thing anymore with Apple Photos
-                        #edited_path += [edited_index[resource['resourceUuid']]]
+                        # edited_path += [edited_index[resource['resourceUuid']]]
             else:
                 unadjusted_count += 1
                 is_master = True
@@ -144,6 +147,11 @@ def run(lib_dir, output_dir):
                     keywords |= set([r_keyword[0]['name']])
 
             rating = version['mainRating']
+
+            # rating used just in old iPhoto. this converts a Favorite photo to rating 5
+            if version['isFavorite'] == 1:
+                rating = 5
+
             if is_master:
                 master_albums |= albums
                 master_keywords |= keywords
@@ -202,8 +210,8 @@ def run(lib_dir, output_dir):
                         output_dir,
                         '%s%s' %
                         (edit_info['uuid'],
-                         os.path.splitext(
-                            edit_info['path'])[1].lower())))
+                         os.path.splitext(edit_info['path'])[1].lower())))
+
                 with open(os.path.join(output_dir, '%s.json' % edit_info['uuid']), 'w') as log_file:
                     print(
                         json.dumps(
