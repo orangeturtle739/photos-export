@@ -150,8 +150,7 @@ def run(lib_dir, output_dir):
             rating = version['mainRating']
 
             # rating used just in old iPhoto. this converts a Favorite photo to rating 5
-            favorite = version['isFavorite']
-            if favorite == 1:
+            if version['isFavorite'] == 1:
                 rating = 5
 
             if is_master:
