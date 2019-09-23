@@ -80,6 +80,11 @@ def run(lib_dir, output_dir):
         for version in iter(vc.fetchone, None):
             edited_path = []
             is_master = False
+
+            # ignore if version was deleted of Library
+            if version['isInTrash'] == 1:
+                continue
+
             if version['adjustmentUuid'] != 'UNADJUSTEDNONRAW':
                 ac = proxy_db.cursor()
                 ac.execute('SELECT * FROM RKModelResource WHERE resourceTag=?',
