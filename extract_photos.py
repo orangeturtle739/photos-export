@@ -9,6 +9,7 @@ import shutil
 
 global count
 
+
 # Generates a unique suffix
 
 
@@ -22,12 +23,14 @@ def gen_name():
         count += 1
         yield name
 
+
 # Generates a unique suffix
 
 
 def next_name(path, namer):
     next(namer)
     return namer.send(path)
+
 
 # Does the export process, copying photos from lib_dir to output_dir
 # with all metadata in a sidecar JSON
@@ -37,7 +40,7 @@ def run(lib_dir, output_dir):
     db_path = os.path.join(lib_dir, 'database')
     main_db_path = os.path.join(db_path, 'photos.db')
     proxy_db_path = os.path.join(db_path, 'photos.db')
-    
+
     main_db = sqlite3.connect(main_db_path)
     main_db.row_factory = sqlite3.Row
     proxy_db = sqlite3.connect(proxy_db_path)
@@ -46,10 +49,10 @@ def run(lib_dir, output_dir):
     namer = gen_name()
 
     # Map below doesn't seem to exist anymore. Leaving this here in case someone finds it.
-    
-    #edited_root = os.path.join(lib_dir, 'resources', 'modelresources')
-    #edited_index = {}
-    #for subdir, dirs, files in os.walk(edited_root):
+
+    # edited_root = os.path.join(lib_dir, 'resources', 'modelresources')
+    # edited_index = {}
+    # for subdir, dirs, files in os.walk(edited_root):
     #    for f in files:
     #        images = os.listdir(subdir)
     #        if len(images) != 1:
@@ -64,7 +67,7 @@ def run(lib_dir, output_dir):
     c.execute('SELECT * FROM RKMaster')
 
     bar = progressbar.ProgressBar(maxval=number_of_rows)
-    
+
     for master in bar(iter(c.fetchone, None)):
         master_uuid = master['uuid']
         master_path = os.path.join(lib_dir, 'Masters', master['imagePath'])
@@ -80,19 +83,24 @@ def run(lib_dir, output_dir):
         for version in iter(vc.fetchone, None):
             edited_path = []
             is_master = False
+
+            # ignore if version was deleted of Library
+            if version['isInTrash'] == 1:
+                continue
+
             if version['adjustmentUuid'] != 'UNADJUSTEDNONRAW':
                 ac = proxy_db.cursor()
                 ac.execute('SELECT * FROM RKModelResource WHERE resourceTag=?',
                            [version['adjustmentUuid']])
                 for resource in iter(ac.fetchone, None):
                     if resource['attachedModelType'] == 2 and resource[
-                            'resourceType'] == 4:
+                        'resourceType'] == 4:
                         if len(edited_path) != 0:
                             pass
                             # print("Warning! Multiple valid edits!")
 
                         # Seems to not be a thing anymore with Apple Photos
-                        #edited_path += [edited_index[resource['resourceUuid']]]
+                        # edited_path += [edited_index[resource['resourceUuid']]]
             else:
                 unadjusted_count += 1
                 is_master = True
@@ -102,7 +110,8 @@ def run(lib_dir, output_dir):
             if latitude is None or longitude is None:
                 latitude = new_latitude
                 longitude = new_longitude
-            elif abs((new_latitude or 100000) - latitude) > 0.00001 and abs((new_longitude or 100000) - longitude) > 0.00001:
+            elif abs((new_latitude or 100000) - latitude) > 0.00001 and abs(
+                    (new_longitude or 100000) - longitude) > 0.00001:
                 print("Inconsistent location: (%f, %f) -> (%f, %f)" %
                       (latitude, longitude, new_latitude, new_longitude))
 
@@ -139,6 +148,12 @@ def run(lib_dir, output_dir):
                     keywords |= set([r_keyword[0]['name']])
 
             rating = version['mainRating']
+
+            # rating used just in old iPhoto. this converts a Favorite photo to rating 5
+            favorite = version['isFavorite']
+            if favorite == 1:
+                rating = 5
+
             if is_master:
                 master_albums |= albums
                 master_keywords |= keywords
@@ -199,8 +214,8 @@ def run(lib_dir, output_dir):
                         output_dir,
                         '%s%s' %
                         (edit_info['uuid'],
-                        os.path.splitext(
-                            edit_info['path'])[1].lower())))
+                         os.path.splitext(
+                             edit_info['path'])[1].lower())))
                 with open(os.path.join(output_dir, '%s.json' % edit_info['uuid']), 'w') as log_file:
                     print(
                         json.dumps(
@@ -213,7 +228,6 @@ def run(lib_dir, output_dir):
 
     main_db.close()
     proxy_db.close()
-
 
 
 # Usage: ./extract_photos.py <photo_library> <output_dir>
