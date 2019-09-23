@@ -3,12 +3,12 @@
 import sys
 import os
 import sqlite3
-import hashlib
+#import hashlib
 import json
 import progressbar
-import uuid
+#import uuid
 import shutil
-from libxmp import XMPFiles
+#from libxmp import XMPFiles
 
 global count
 
@@ -129,7 +129,7 @@ def run(lib_dir, output_dir):
             wc.execute(
                 'SELECT * FROM RKKeywordForVersion WHERE versionId=?', [version['modelId']])
             keywords = set([])
-            for keyword_id in iter(kc.fetchone, None):
+            for keyword_id in iter(wc.fetchone, None):
                 klc = main_db.cursor()
                 klc.execute('SELECT * FROM RKKeyword WHERE modelId=?',
                             [keyword_id['keywordId']])
