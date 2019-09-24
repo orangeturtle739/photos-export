@@ -39,12 +39,9 @@ def split_path(path):
 def run(lib_dir, output_dir):
     db_path = os.path.join(lib_dir, 'database')
     main_db_path = os.path.join(db_path, 'photos.db')
-    proxy_db_path = os.path.join(db_path, 'photos.db')
 
     main_db = sqlite3.connect(main_db_path)
     main_db.row_factory = sqlite3.Row
-    proxy_db = sqlite3.connect(proxy_db_path)
-    proxy_db.row_factory = sqlite3.Row
 
     # PASSO1: Pega a tabela de todas as pastas
     folders_table = main_db.cursor()
