@@ -54,7 +54,6 @@ def run(source_dir, output_dir, verbose):
         if ext != '.json' or filename in SYSTEM_FILES:
             continue
 
-        print ("Processing File: ", f)
         num_of_json += 1
         with open(os.path.join(source_dir, f)) as data_file:
             data = json.load(data_file)
