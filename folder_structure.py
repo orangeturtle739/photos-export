@@ -24,13 +24,11 @@ FOLDER_MODELID="modelId"
 IGNORED_FOLDERS = ['LibraryFolder', 'TopLevelAlbums', 'MediaTypesSmartAlbums', 'TopLevelSlideshows', 'TrashFolder']
 JSON_FILENAME="folders.json"
 
-
-
-def print_dict(dicionario):
-    print("--  Dicionario: --")
-    for key, val in dicionario.items():
-        print(key, "=>", val)
-    print("----------------------------------")
+#def print_dict(dicionario):
+#    print("--  Dicionario: --")
+#    for key, val in dicionario.items():
+#        print(key, "=>", val)
+#    print("----------------------------------")
 
 
 def split_path(path):
@@ -70,8 +68,6 @@ def run(lib_dir, output_dir):
         #print("Adicionando... KEY/UUID/NAME/PATH", folder_modelid, folder_uuid, folder_name, folder_path)
         db_folder_dict[folder_modelid] = [folder_uuid, folder_name, folder_path]
 
-    print_dict(db_folder_dict)
-
     # Dict ready. Let's substitute the Paths and return a simpler dict
     final_dict = {}
     for key,val in db_folder_dict.items():
@@ -91,9 +87,6 @@ def run(lib_dir, output_dir):
 
                     path_described += folder_name   # Change folder number to Folder name
                     final_dict[key_uuid] = [name, path_described]
-
-    print("Final Dict (uuid=>name,path):")
-    print_dict(final_dict)
 
     #  mount and store final JSON on file
     json_folders = json.dumps(final_dict)
