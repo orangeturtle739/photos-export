@@ -11,23 +11,28 @@ import sys
 import sqlite3
 
 # SOME CONSTANTS USED
-ALBUM_TABLE="RKAlbum"
-FOLDER_TABLE="RKFolder"
+ALBUM_TABLE = "RKAlbum"
+FOLDER_TABLE = "RKFolder"
 
-UUID_FIELD="uuid"
-NAME_FIELD="name"
-TRASH_FIELD="isInTrash"
-MODELID_FIELD="modelId"
+UUID_FIELD = "uuid"
+NAME_FIELD = "name"
+TRASH_FIELD = "isInTrash"
+MODELID_FIELD = "modelId"
 
-FOLDER_FIELD="folderUuid"
+FOLDER_FIELD = "folderUuid"
 
 
 # Ignore all albuns inside these folders. consider only user created
-IGNORED_FOLDERS_ALBUNS = ['LibraryFolder', 'TopLevelAlbums', 'MediaTypesSmartAlbums', 'TopLevelSlideshows', 'TrashFolder']
-JSON_FILENAME="albums.json"
+IGNORED_FOLDERS_ALBUNS = [
+    'LibraryFolder',
+    'TopLevelAlbums',
+    'MediaTypesSmartAlbums',
+    'TopLevelSlideshows',
+    'TrashFolder']
+JSON_FILENAME = "albums.json"
 
 # helper function, to debug
-#def print_dict(dicionario):
+# def print_dict(dicionario):
 #   print("--  Dicionario: --")
 #    for key, val in dicionario.items():
 #        print(key, "=>", val)
@@ -54,17 +59,17 @@ def run(lib_dir, output_dir):
         if album[TRASH_FIELD] == 1:
             continue
 
-        album_name      = album[NAME_FIELD]
-        album_uuid      = album[UUID_FIELD]
-        album_folder    = album[FOLDER_FIELD]
-        album_modelid   = album[MODELID_FIELD]
+        album_name = album[NAME_FIELD]
+        album_uuid = album[UUID_FIELD]
+        album_folder = album[FOLDER_FIELD]
+        album_modelid = album[MODELID_FIELD]
 
         # add to dictionary
-        if album_folder not in IGNORED_FOLDERS_ALBUNS and album_name != None:
+        if album_folder not in IGNORED_FOLDERS_ALBUNS and album_name is not None:
             #album_name = album_name.replace('/', '_')
             db_album_dict[album_uuid] = [album_name, album_folder]
 
-    #print_dict(db_album_dict)
+    # print_dict(db_album_dict)
 
     #  mount and store final JSON on file
     json_albums = json.dumps(db_album_dict)
@@ -72,7 +77,6 @@ def run(lib_dir, output_dir):
     json_file = open(json_path, "w")
     json_file.write(json_albums)
     json_file.close()
-
 
 
 # Usage: ./folder_structure.py <photo_library> <output_dir>

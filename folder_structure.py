@@ -11,20 +11,25 @@ import sys
 import sqlite3
 
 # SOME CONSTANTS USED
-ALBUM_TABLE="RKAlbum"
-FOLDER_TABLE="RKFolder"
-UUID_FIELD="uuid"
-NAME_FIELD="name"
-TRASH_FIELD="isInTrash"
+ALBUM_TABLE = "RKAlbum"
+FOLDER_TABLE = "RKFolder"
+UUID_FIELD = "uuid"
+NAME_FIELD = "name"
+TRASH_FIELD = "isInTrash"
 
-ALBUM_FOLDER_FIELD="folderUuid"
-FOLDER_PATH_FIELD="folderPath"
-FOLDER_MODELID="modelId"
+ALBUM_FOLDER_FIELD = "folderUuid"
+FOLDER_PATH_FIELD = "folderPath"
+FOLDER_MODELID = "modelId"
 
-IGNORED_FOLDERS = ['LibraryFolder', 'TopLevelAlbums', 'MediaTypesSmartAlbums', 'TopLevelSlideshows', 'TrashFolder']
-JSON_FILENAME="folders.json"
+IGNORED_FOLDERS = [
+    'LibraryFolder',
+    'TopLevelAlbums',
+    'MediaTypesSmartAlbums',
+    'TopLevelSlideshows',
+    'TrashFolder']
+JSON_FILENAME = "folders.json"
 
-#def print_dict(dicionario):
+# def print_dict(dicionario):
 #    print("--  Dicionario: --")
 #    for key, val in dicionario.items():
 #        print(key, "=>", val)
@@ -56,20 +61,23 @@ def run(lib_dir, output_dir):
         if folder[TRASH_FIELD] == 1:
             continue
 
-        folder_path     = folder[FOLDER_PATH_FIELD]
-        folder_name     = folder[NAME_FIELD]
-        folder_uuid     = folder[UUID_FIELD]
-        folder_modelid  = folder[FOLDER_MODELID]
+        folder_path = folder[FOLDER_PATH_FIELD]
+        folder_name = folder[NAME_FIELD]
+        folder_uuid = folder[UUID_FIELD]
+        folder_modelid = folder[FOLDER_MODELID]
 
         # add to dictionary
         #print("Adicionando... KEY/UUID/NAME/PATH", folder_modelid, folder_uuid, folder_name, folder_path)
-        db_folder_dict[folder_modelid] = [folder_uuid, folder_name, folder_path]
+        db_folder_dict[folder_modelid] = [
+            folder_uuid, folder_name, folder_path]
 
     # Dict ready. Let's substitute the Paths and return a simpler dict
     final_dict = {}
-    for key,val in db_folder_dict.items():
-        path_numbered = val[2]                          # get the path in numbers
-        key_uuid = val[0]                            # the key for the final dict
+    for key, val in db_folder_dict.items():
+        # get the path in numbers
+        path_numbered = val[2]
+        # the key for the final dict
+        key_uuid = val[0]
         name = val[1]
 
         path_described = ""
@@ -91,7 +99,6 @@ def run(lib_dir, output_dir):
     json_file = open(json_path, "w")
     json_file.write(json_folders)
     json_file.close()
-
 
 
 # Usage: ./folder_structure.py <photo_library> <output_dir>

@@ -14,6 +14,8 @@ SYSTEM_FILES = ["albums.json", "folders.json"]
 
 # Source_dir : passed as parameter, where your photos are located
 # output_dir : directory under where all albuns will be created
+
+
 def run(source_dir, output_dir, verbose):
     def vprint(x):
         if verbose:
@@ -44,8 +46,11 @@ def run(source_dir, output_dir, verbose):
 
         folders_file = open(folders_path)
         folders_dict = json.load(folders_file)
-    except:
-        print("Error loading Albums or Folders system file.\n\t", albums_path, folders_path)
+    except BaseException:
+        print(
+            "Error loading Albums or Folders system file.\n\t",
+            albums_path,
+            folders_path)
         sys.exit(1)
 
     for f in bar(all_files):
@@ -102,14 +107,16 @@ def run(source_dir, output_dir, verbose):
                     folder_id = albums_dict[album_id][1]
                     album_folder = folders_dict[folder_id][1]
 
-                    album_fullpath = os.path.join(output_dir, album_folder, album_name)
+                    album_fullpath = os.path.join(
+                        output_dir, album_folder, album_name)
 
                     if not os.path.exists(album_fullpath):
                         # Create the album on destination directory
                         os.makedirs(album_fullpath, exist_ok=True)
                         num_of_albuns += 1
 
-                    imagedestination = os.path.join(album_fullpath, file_original_name)   # change destination to inside album
+                    imagedestination = os.path.join(
+                        album_fullpath, file_original_name)   # change destination to inside album
 
                     if album_counter == number_of_albums:
                         # let's not consider the photo was exported or will
@@ -139,6 +146,7 @@ def run(source_dir, output_dir, verbose):
     vprint('Total files moved: {}'.format(num_of_moved))
     vprint('Total files duplicated to albuns: {}'.format(num_of_copied))
 
+
 # Usage: ./album_folder <source_dir> <output_dir>
 # Copies all files from source_dir to a folder-based map structure in output_dir
 # Useful for programs like Plex, who expect a folder-based structure for
@@ -159,7 +167,7 @@ if __name__ == '__main__':
 
     try:
         args = parser.parse_args()
-    except:
+    except BaseException:
         sys.exit(2)
 
     start_time = time.time()

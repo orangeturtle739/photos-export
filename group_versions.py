@@ -58,6 +58,7 @@ def run(root):
     db.commit()
     db.close()
 
+
 # Usage: ./group_version.py <digikam_dir>
 if __name__ == '__main__':
     run(sys.argv[1])
