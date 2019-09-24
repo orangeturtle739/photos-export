@@ -105,8 +105,6 @@ def run(source_dir, output_dir, verbose):
 
                     album_fullpath = os.path.join(output_dir, album_folder, album_name)
 
-                    print("Final Album Path: ", album_fullpath)
-
                     if not os.path.exists(album_fullpath):
                         # Create the album on destination directory
                         os.makedirs(album_fullpath, exist_ok=True)
