@@ -61,6 +61,7 @@ def run(lib_dir, output_dir):
 
         # add to dictionary
         if album_folder not in IGNORED_FOLDERS_ALBUNS and album_name != None:
+            #album_name = album_name.replace('/', '_')
             db_album_dict[album_uuid] = [album_name, album_folder]
 
     #print_dict(db_album_dict)

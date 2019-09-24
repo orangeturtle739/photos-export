@@ -128,7 +128,7 @@ def run(lib_dir, output_dir):
                         print(
                             "Warning! More than one album for ID %d" %
                             album_id['albumId'])
-                    albums |= set([r_albums[0]['name']])
+                    albums |= set([r_albums[0]['uuid']])
 
             wc = main_db.cursor()
             wc.execute(
@@ -184,6 +184,10 @@ def run(lib_dir, output_dir):
         if unadjusted_count != 0 and unadjusted_count != 1:
             # print("Warning! %d unadjusted images!" % unadjusted_count)
             pass
+
+        # create output_dir if not exists
+        if not os.path.isdir(output_dir):
+            os.makedirs(output_dir, exist_ok=True)
 
         if os.path.isfile(master_path):
             # Export!
