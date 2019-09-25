@@ -107,8 +107,9 @@ def run(source_dir, output_dir, verbose):
                     folder_id = albums_dict[album_id][1]
                     album_folder = folders_dict[folder_id][1]
 
-                    album_fullpath = os.path.join(
-                        output_dir, album_folder, album_name)
+                    # build and normalize path to current OS
+                    album_fullpath = os.path.normpath(os.path.join(
+                        output_dir, album_folder, album_name))
 
                     if not os.path.exists(album_fullpath):
                         # Create the album on destination directory
