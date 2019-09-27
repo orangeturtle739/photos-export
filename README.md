@@ -24,9 +24,10 @@ pictures in it while preserving:
 * Keywords (as tags)
 * Ratings
 * Edits (exports the original and all edits for each image)
+* Folder and Album structure (photos not included in any album will be placed on ROOT of destination directory)
 
 The program writes as much metadata as it can directly into the images using EXIF. (See http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/XMP.html for information about supported tags.)
-This program worked on the database format around 2019-07, Apple Photos version 4.0 .
+This program worked on the database format around 2019-07, Apple Photos version 4.0 (also tested in a Apple Photos 3.0 with about 100.000 photos).
 
 The program operates in distinct phases, which can all be run independently:
 
@@ -51,8 +52,17 @@ Run as:
   ```shell
   $ ./group_versions.py <output_dir>
   ```
+* Folder Structure: Reads Library Database and generates a file (folders.json) with all information necessary to replicate the folder structure contained in Photos.app. Place the destination file within the output directory with exported photos. Run as:
+  ```shell
+  $ ./folder_structure.py <library_dir> <output_dir>
+  ```
 
-* Album folders: copy all photo's in folders according to the albums they are in. If a photo is in two different albums, it will be copied in two different folders, each folder with the name of the album. Run as:
+* Albums Data: Reads Library Database and generates a file (albums.json) with all information necessary to place the album inside the right folder. Place the destination file within the output directory with exported photos. Run as:
+  ```shell
+  $ ./albums_data.py <library_dir> <output_dir>
+  ```
+
+* Album folders: copy/move all photo's in folders according to the albums they are in. If a photo is in two different albums, it will be copied in two different folders, each folder with the name of the album. Run as:
   ```shell
   $ ./album_folder.py <source_dir> <output_dir>
   ```

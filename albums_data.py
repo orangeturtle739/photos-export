@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-#     This script reads ans stores all Albums seneitive  information
+#     This script reads ans stores all Albums sensitive  information
 #  from Photos.app, used to store a Album on the right Folder it should go
 #  Generates a JSON file of the information to be used later
 #
