@@ -65,6 +65,7 @@ def run(root):
                         exec_opts(opts +
                                   ['-overwrite_original_in_place', '-P'], img_file)
 
+
 # Usage: ./set_exif.py <output_dir>
 if __name__ == '__main__':
     run(sys.argv[1])

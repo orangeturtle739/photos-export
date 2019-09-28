@@ -48,7 +48,8 @@ def run(lib_dir, output_dir):
 
     namer = gen_name()
 
-    # Map below doesn't seem to exist anymore. Leaving this here in case someone finds it.
+    # Map below doesn't seem to exist anymore. Leaving this here in case
+    # someone finds it.
 
     # edited_root = os.path.join(lib_dir, 'resources', 'modelresources')
     # edited_index = {}
@@ -100,7 +101,7 @@ def run(lib_dir, output_dir):
                            [version['adjustmentUuid']])
                 for resource in iter(ac.fetchone, None):
                     if resource['attachedModelType'] == 2 and resource[
-                        'resourceType'] == 4:
+                            'resourceType'] == 4:
                         if len(edited_path) != 0:
                             pass
                             # print("Warning! Multiple valid edits!")
@@ -128,7 +129,7 @@ def run(lib_dir, output_dir):
                         print(
                             "Warning! More than one album for ID %d" %
                             album_id['albumId'])
-                    albums |= set([r_albums[0]['name']])
+                    albums |= set([r_albums[0]['uuid']])
 
             wc = main_db.cursor()
             wc.execute(
@@ -148,7 +149,8 @@ def run(lib_dir, output_dir):
 
             rating = version['mainRating']
 
-            # rating used just in old iPhoto. this converts a Favorite photo to rating 5
+            # rating used just in old iPhoto. this converts a Favorite photo to
+            # rating 5
             if version['isFavorite'] == 1:
                 rating = 5
 
@@ -184,6 +186,10 @@ def run(lib_dir, output_dir):
         if unadjusted_count != 0 and unadjusted_count != 1:
             # print("Warning! %d unadjusted images!" % unadjusted_count)
             pass
+
+        # create output_dir if not exists
+        if not os.path.isdir(output_dir):
+            os.makedirs(output_dir, exist_ok=True)
 
         if os.path.isfile(master_path):
             # Export!
