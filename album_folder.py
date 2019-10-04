@@ -5,13 +5,17 @@ import progressbar
 import os
 import sys
 import time
+import datetime
 from argparse import ArgumentParser
 from shutil import copyfile
 from shutil import move
 
+SYSTEM_FILES = ["albums.json", "folders.json"]
 
 # Source_dir : passed as parameter, where your photos are located
 # output_dir : directory under where all albuns will be created
+
+
 def run(source_dir, output_dir, verbose):
     def vprint(x):
         if verbose:
@@ -27,15 +31,32 @@ def run(source_dir, output_dir, verbose):
     num_of_albuns = 0
     num_of_copied = 0
     num_of_moved = 0
-    num_of_total_files = 0
     num_of_json = 0
 
     all_files = os.listdir(source_dir)
     num_of_total_files = len(all_files)
 
+    # load albums and folders data file
+    albums_path = os.path.join(source_dir, SYSTEM_FILES[0])
+    folders_path = os.path.join(source_dir, SYSTEM_FILES[1])
+
+    try:
+        albums_file = open(albums_path)
+        albums_dict = json.load(albums_file)
+
+        folders_file = open(folders_path)
+        folders_dict = json.load(folders_file)
+    except BaseException:
+        print(
+            "Error loading Albums or Folders system file.\n\t",
+            albums_path,
+            folders_path)
+        sys.exit(1)
+
     for f in bar(all_files):
         (root_file, ext) = os.path.splitext(f)
-        if ext != '.json':
+        filename = os.path.basename(f)
+        if ext != '.json' or filename in SYSTEM_FILES:
             continue
 
         num_of_json += 1
@@ -76,19 +97,28 @@ def run(source_dir, output_dir, verbose):
                     num_of_missing += 1
             # this is where the photo is included in some album
             else:
-                # list of all albums the photo is included
-                for album in data['albums']:
-                    album = album.replace('/', '_')
-                    if not os.path.exists(os.path.join(output_dir, album)):
+                # get the list of all albums UUIDs the photo is included
+                for album_id in data['albums']:
+                    album_name = albums_dict[album_id][0]
+                    album_name = album_name.replace(os.path.sep, '_')
+
+                    # mount the final path of the Album, based in its UUID.
+                    # get the folder path from folders dict
+                    folder_id = albums_dict[album_id][1]
+                    album_folder = folders_dict[folder_id][1]
+
+                    # build and normalize path to current OS
+                    album_fullpath = os.path.normpath(os.path.join(
+                        output_dir, album_folder, album_name))
+
+                    if not os.path.exists(album_fullpath):
                         # Create the album on destination directory
-                        os.mkdir(os.path.join(output_dir, album))
+                        os.makedirs(album_fullpath, exist_ok=True)
                         num_of_albuns += 1
 
                     imagedestination = os.path.join(
-                        output_dir, album, file_original_name)   # change destination to inside album
+                        album_fullpath, file_original_name)   # change destination to inside album
 
-                    # temporary commented, until tested it all right, no
-                    # copies, no moves.
                     if album_counter == number_of_albums:
                         # let's not consider the photo was exported or will
                         # raise an exception
@@ -117,6 +147,7 @@ def run(source_dir, output_dir, verbose):
     vprint('Total files moved: {}'.format(num_of_moved))
     vprint('Total files duplicated to albuns: {}'.format(num_of_copied))
 
+
 # Usage: ./album_folder <source_dir> <output_dir>
 # Copies all files from source_dir to a folder-based map structure in output_dir
 # Useful for programs like Plex, who expect a folder-based structure for
@@ -137,7 +168,7 @@ if __name__ == '__main__':
 
     try:
         args = parser.parse_args()
-    except:
+    except BaseException:
         sys.exit(2)
 
     start_time = time.time()
