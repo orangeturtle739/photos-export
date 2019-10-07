@@ -27,13 +27,8 @@ IGNORED_FOLDERS = [
     'MediaTypesSmartAlbums',
     'TopLevelSlideshows',
     'TrashFolder']
-JSON_FILENAME = "folders.json"
 
-# def print_dict(dicionario):
-#    print("--  Dicionario: --")
-#    for key, val in dicionario.items():
-#        print(key, "=>", val)
-#    print("----------------------------------")
+JSON_FILENAME = "folders.json"
 
 
 def split_path(path):
@@ -48,18 +43,14 @@ def run(lib_dir, output_dir):
     main_db = sqlite3.connect(main_db_path)
     main_db.row_factory = sqlite3.Row
 
-    # PASSO1: Pega a tabela de todas as pastas
     folders_table = main_db.cursor()
-    folders_table.execute('SELECT * FROM ' + FOLDER_TABLE)
+    folders_table.execute('SELECT * FROM ' + FOLDER_TABLE + ' WHERE isInTrash=0')
 
     # will store modelID -> [FOLDERNAME, PATH]
     db_folder_dict = {}
 
     # PASSO2: Para cada pasta listada,
     for folder in iter(folders_table.fetchone, None):
-        # Ignore Trashed Folders
-        if folder[TRASH_FIELD] == 1:
-            continue
 
         folder_path = folder[FOLDER_PATH_FIELD]
         folder_name = folder[NAME_FIELD]
@@ -67,7 +58,6 @@ def run(lib_dir, output_dir):
         folder_modelid = folder[FOLDER_MODELID]
 
         # add to dictionary
-        #print("Adicionando... KEY/UUID/NAME/PATH", folder_modelid, folder_uuid, folder_name, folder_path)
         db_folder_dict[folder_modelid] = [
             folder_uuid, folder_name, folder_path]
 
