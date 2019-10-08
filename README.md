@@ -50,7 +50,7 @@ The program operates in distinct phases, which can all be run independently:
 Run as:
 
   ```shell
-  $ ./group_versions.py <output_dir>
+  $ ./group_versions.py <digikam_db_dir> <photos_dir>
   ```
 * Folder Structure: Reads Library Database and generates a file (folders.json) with all information necessary to replicate the folder structure contained in Photos.app. Place the destination file within the output directory with exported photos. Run as:
   ```shell
