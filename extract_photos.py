@@ -9,10 +9,7 @@ import shutil
 
 global count
 
-
 # Generates a unique suffix
-
-
 def gen_name():
     count = 0
     while True:
@@ -25,8 +22,6 @@ def gen_name():
 
 
 # Generates a unique suffix
-
-
 def next_name(path, namer):
     next(namer)
     return namer.send(path)
@@ -84,7 +79,7 @@ def run(lib_dir, output_dir):
             continue
 
         vc = main_db.cursor()
-        vc.execute('SELECT * FROM RKVersion WHERE masterUuid=?', [master_uuid])
+        vc.execute('SELECT * FROM RKVersion WHERE masterUuid=? and isInTrash=0', [master_uuid])
         edited_paths = []
         unadjusted_count = 0
         for version in iter(vc.fetchone, None):
@@ -92,8 +87,8 @@ def run(lib_dir, output_dir):
             is_master = False
 
             # ignore if version was deleted of Library
-            if version['isInTrash'] == 1:
-                continue
+            #if version['isInTrash'] == 1:
+            #   continue
 
             if version['adjustmentUuid'] != 'UNADJUSTEDNONRAW':
                 ac = proxy_db.cursor()
@@ -121,7 +116,7 @@ def run(lib_dir, output_dir):
             albums = set([])
             for album_id in iter(kc.fetchone, None):
                 alc = main_db.cursor()
-                alc.execute('SELECT * FROM RKAlbum WHERE modelId=?',
+                alc.execute('SELECT * FROM RKAlbum WHERE modelId=? and isInTrash=0',
                             [album_id['albumId']])
                 r_albums = alc.fetchall()
                 if len(r_albums) != 0:
@@ -129,7 +124,7 @@ def run(lib_dir, output_dir):
                         print(
                             "Warning! More than one album for ID %d" %
                             album_id['albumId'])
-                    albums |= set([r_albums[0]['uuid']])
+                    albums |= {r_albums[0]['uuid']}
 
             wc = main_db.cursor()
             wc.execute(
@@ -145,7 +140,7 @@ def run(lib_dir, output_dir):
                         print(
                             "Warning! More than one keyword for ID %d" %
                             keyword_id['keywordId'])
-                    keywords |= set([r_keyword[0]['name']])
+                    keywords |= {r_keyword[0]['name']}
 
             rating = version['mainRating']
 
@@ -198,9 +193,9 @@ def run(lib_dir, output_dir):
             shutil.copy2(
                 master_path,
                 os.path.join(
-                    output_dir,
-                    iuuid +
-                    os.path.splitext(master_path)[1].lower()))
+                   output_dir,
+                   iuuid +
+                   os.path.splitext(master_path)[1].lower()))
             # Write the data
             with open(os.path.join(output_dir, '%s.json' % iuuid), 'w') as log_file:
                 print(
@@ -208,7 +203,7 @@ def run(lib_dir, output_dir):
                         dict(master_data, derived_from=None)),
                     file=log_file)
             # Copy the edits
-            edit_export_path = os.path.join(base_export_path, 'edited')
+            #edit_export_path = os.path.join(base_export_path, 'edited')
             for edit_info in edited_paths:
                 shutil.copy2(
                     edit_info['path'],

@@ -12,10 +12,9 @@ from shutil import move
 
 SYSTEM_FILES = ["albums.json", "folders.json"]
 
+
 # Source_dir : passed as parameter, where your photos are located
-# output_dir : directory under where all albuns will be created
-
-
+# output_dir : directory under where all albums will be created
 def run(source_dir, output_dir, verbose):
     def vprint(x):
         if verbose:
@@ -37,20 +36,20 @@ def run(source_dir, output_dir, verbose):
     num_of_total_files = len(all_files)
 
     # load albums and folders data file
-    albums_path = os.path.join(source_dir, SYSTEM_FILES[0])
-    folders_path = os.path.join(source_dir, SYSTEM_FILES[1])
+    albums_json_path = os.path.join(source_dir, SYSTEM_FILES[0])
+    folders_json_path = os.path.join(source_dir, SYSTEM_FILES[1])
 
     try:
-        albums_file = open(albums_path)
+        albums_file = open(albums_json_path)
         albums_dict = json.load(albums_file)
 
-        folders_file = open(folders_path)
+        folders_file = open(folders_json_path)
         folders_dict = json.load(folders_file)
     except BaseException:
         print(
             "Error loading Albums or Folders system file.\n\t",
-            albums_path,
-            folders_path)
+            albums_json_path,
+            folders_json_path)
         sys.exit(1)
 
     for f in bar(all_files):
@@ -69,9 +68,11 @@ def run(source_dir, output_dir, verbose):
             # This is the ORIGINAL file name
             file_original_name = os.path.basename(
                 data['path'])
+
             # get Extension of photo file
             root, file_extension = os.path.splitext(
                 file_original_name)
+
             # the file must be located with the json file, copied from
             # extract_photos.py
             imagesource = os.path.join(
@@ -84,17 +85,25 @@ def run(source_dir, output_dir, verbose):
             # Those photos whose have albuns, will be treated later
             # number of albums, to copy to various albums
             number_of_albums = len(data['albums'])
+
+            if not os.path.exists(imagesource):  # sourcefile missing... does nothing
+                vprint('Missing File: {}'.format(imagesource))
+                num_of_missing += 1
+                continue
+
             if number_of_albums == 0:
                 # destination without album
-                imagedestination = os.path.join(output_dir, file_original_name)
-                if os.path.exists(imagesource):
-                    vprint('Moving : {} -> {}'.format(imagesource, imagedestination))
-                    # this is the last album, so, move the file
-                    move(imagesource, imagedestination)
-                    num_of_moved += 1
-                else:
-                    vprint('Missing File: {}'.format(imagesource))
-                    num_of_missing += 1
+                image_dest_path = os.path.normpath(os.path.join(output_dir, file_original_name))
+
+                if os.path.isfile(image_dest_path):  # if dest file exists, if assumes name with suffix
+                    new_dest_filename = file_exported_name + file_extension
+                    image_dest_path = os.path.normpath(os.path.join(output_dir, new_dest_filename))
+
+                # move the file to ROOT of output_dir
+                vprint('Moving : {} -> {}'.format(imagesource, image_dest_path))
+                move(imagesource, image_dest_path)
+                num_of_moved += 1
+
             # this is where the photo is included in some album
             else:
                 # get the list of all albums UUIDs the photo is included
@@ -105,38 +114,38 @@ def run(source_dir, output_dir, verbose):
                     # mount the final path of the Album, based in its UUID.
                     # get the folder path from folders dict
                     folder_id = albums_dict[album_id][1]
-                    album_folder = folders_dict[folder_id][1]
+                    if folder_id == "":  # ex.: TopLevelFolders, removed in albums_data.py
+                        album_folder = "."  # set to root of outputdir
+                    else:
+                        album_folder = folders_dict[folder_id][1]
 
                     # build and normalize path to current OS
-                    album_fullpath = os.path.normpath(os.path.join(
+                    album_full_path = os.path.normpath(os.path.join(
                         output_dir, album_folder, album_name))
 
-                    if not os.path.exists(album_fullpath):
+                    if not os.path.exists(album_full_path):
                         # Create the album on destination directory
-                        os.makedirs(album_fullpath, exist_ok=True)
+                        os.makedirs(album_full_path, exist_ok=True)
                         num_of_albuns += 1
 
-                    imagedestination = os.path.join(
-                        album_fullpath, file_original_name)   # change destination to inside album
+                    image_dest_path = os.path.normpath(os.path.join(
+                        album_full_path, file_original_name))  # change destination to inside album
+
+                    if os.path.isfile(image_dest_path):  # if dest file exists, if assumes name with suffix
+                        new_dest_filename = file_exported_name + file_extension
+                        image_dest_path = os.path.normpath(os.path.join(
+                            album_full_path, new_dest_filename))
 
                     if album_counter == number_of_albums:
-                        # let's not consider the photo was exported or will
-                        # raise an exception
-                        if os.path.exists(imagesource):
-                            vprint(
-                                'Moving : {} -> {}'.format(imagesource, imagedestination))
-                            # this is the last album, so, move the file
-                            move(imagesource, imagedestination)
-                            num_of_moved += 1
-                        else:
-                            vprint('Missing File: {}'.format(imagesource))
-                            num_of_missing += 1
+                        vprint(
+                            'Moving : {} -> {}'.format(imagesource, image_dest_path))
+                        # this is the last album, so, move the file
+                        move(imagesource, image_dest_path)
+                        num_of_moved += 1
                     else:
-                        if args.verbose:
-                            vprint(
-                                'Copying: {} -> {}'.format(imagesource, imagedestination))
-                        # no copies, no moves.
-                        copyfile(imagesource, imagedestination)
+                        vprint(
+                            'Copying: {} -> {}'.format(imagesource, image_dest_path))
+                        copyfile(imagesource, image_dest_path)
                         album_counter += 1
                         num_of_copied += 1
 
