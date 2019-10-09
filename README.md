@@ -22,7 +22,7 @@ pictures in it while preserving:
 * GPS location data
 * Albums (as tags)
 * Keywords (as tags)
-* Ratings
+* Rating (Favorite photos get 5 of rating. Others get 0)
 * Edits (exports the original and all edits for each image)
 * Folder and Album structure (photos not included in any album will be placed on ROOT of destination directory)
 
@@ -46,11 +46,11 @@ The program operates in distinct phases, which can all be run independently:
   ```shell
   $ ./set_exif.py <output_dir>
   ```
-* Group versions: the script is digikam specific. Before running this script, import the photos into digikam. Launch digikam at least once, then close it. Then, run this script to write all the photo version and edit information into digikam's database so digikam can group edited photos.
+* Group versions: the script is DIGIKAM specific. Before running this script, import the photos into digikam. Launch digikam at least once, then close it. Then, run this script to write all the photo version and edit information into digikam's database so digikam can group edited photos.
 Run as:
 
   ```shell
-  $ ./group_versions.py <output_dir>
+  $ ./group_versions.py <digikam_db_dir> <photos_dir>
   ```
 * Folder Structure: Reads Library Database and generates a file (folders.json) with all information necessary to replicate the folder structure contained in Photos.app. Place the destination file within the output directory with exported photos. Run as:
   ```shell
@@ -67,10 +67,10 @@ Run as:
   $ ./album_folder.py <source_dir> <output_dir>
   ```
 
-To run all the phases together (except for group photos), run:
+To run all the phases together (digikam phase is optional, omit the last parameter if you do not want to run), run:
 
 ```shell
-$ ./photos_export.py <foo.photoslibrary> <output_dir>
+$ ./photos_export.py <foo.photoslibrary> <output_dir> [digikam_db_dir]
 ```
 
 All the scripts have nice progress bars.
