@@ -67,7 +67,7 @@ Run as:
   $ ./album_folder.py <source_dir> <output_dir>
   ```
 
-To run all the phases together (digikam phase is optional, answer no if you omit the last parameter), run:
+To run all the phases together (digikam phase is optional, omit the last parameter if you do not want to run), run:
 
 ```shell
 $ ./photos_export.py <foo.photoslibrary> <output_dir> [digikam_db_dir]
