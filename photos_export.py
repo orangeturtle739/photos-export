@@ -39,10 +39,8 @@ def run(lib_dir, output_dir, digikam_dir):
     output('Setting EXIF metadata')
     set_exif.run(temp_dir)
 
-    output("ONLY FOR DIGIKAM USERS !\nDo you want to Group Versions ? You need to run Digikam and configure "
-           "repository first !")
-    if askyesno():
-        output('Setting EXIF metadata')
+    if digikam_dir is not None:
+        output('Grouping Versions...')
         group_versions.run(digikam_dir, temp_dir)
 
     output('Exporting Folder Structure')
@@ -70,7 +68,8 @@ if __name__ == '__main__':
 
     try:
         args = parser.parse_args()
-    except BaseException:
+    except Exception as error:
+        print("Argument error: ", error)
         sys.exit(2)
 
     # run(sys.argv[1], sys.argv[2], sys.argv[3])

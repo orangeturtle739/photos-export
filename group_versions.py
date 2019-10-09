@@ -23,10 +23,15 @@ def image_id(db, name):
     return rows[0]['id']
 
 
-def run(digikam_dir, photos_dir, digikam_dir):
+def run(digikam_dir, photos_dir):
     db_path = os.path.join(digikam_dir, 'digikam4.db')
-    db = sqlite3.connect(db_path)
-    db.row_factory = sqlite3.Row
+
+    try:
+        db = sqlite3.connect(db_path)
+        db.row_factory = sqlite3.Row
+    except Exception as error:
+        print("Error connecting to DIGIKAM DB: ", error)
+        sys.exit(1)
 
     bar = progressbar.ProgressBar()
     for photo_file in bar(os.listdir(photos_dir)):
@@ -58,4 +63,4 @@ def run(digikam_dir, photos_dir, digikam_dir):
 
 # Usage: ./group_version.py <digikam_dir> <photos_dir>
 if __name__ == '__main__':
-    run(sys.argv[1], sys.argv[2], sys.argv[3])
+    run(sys.argv[1], sys.argv[2])
