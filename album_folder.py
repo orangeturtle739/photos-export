@@ -173,7 +173,7 @@ if __name__ == '__main__':
         help='Path of where the .json and photos were exported')
     parser.add_argument(
         'output_dir',
-        help='Path to where the albuns and the files will be created/moved')
+        help='Path to where the albums and the files will be created/moved')
 
     try:
         args = parser.parse_args()
