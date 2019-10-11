@@ -70,6 +70,7 @@ def run(lib_dir, output_dir):
         master_path = os.path.join(lib_dir, 'Masters', master['imagePath'])
         latitude = None
         longitude = None
+        title = ""
         master_albums = set([])
         master_keywords = set([])
         master_rating = None
