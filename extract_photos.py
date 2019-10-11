@@ -86,10 +86,6 @@ def run(lib_dir, output_dir):
             edited_path = []
             is_master = False
 
-            # ignore if version was deleted of Library
-            #if version['isInTrash'] == 1:
-            #   continue
-
             if version['adjustmentUuid'] != 'UNADJUSTEDNONRAW':
                 ac = proxy_db.cursor()
                 ac.execute('SELECT * FROM RKModelResource WHERE resourceTag=?',
@@ -109,6 +105,8 @@ def run(lib_dir, output_dir):
 
             latitude = version['latitude']
             longitude = version['longitude']
+
+            title = version['name']
 
             kc = main_db.cursor()
             kc.execute('SELECT * FROM RKAlbumVersion WHERE versionId=?',
@@ -169,6 +167,7 @@ def run(lib_dir, output_dir):
         iuuid = next_name(master_path, namer)
 
         master_data = {
+            'title': title,
             'uuid': iuuid,
             'path': master_path,
             'in_library': master_in_library,
