@@ -27,6 +27,9 @@ def run(root):
             foo = map(lambda x: ('-EXIF:%s' % x), flags)
             return list(foo)
 
+        def title_opts(title):
+            return ["-XMP:Caption=%s" % title]
+
         def tag_opts(tags):
             return list(map(lambda x: "-XMP:TagsList='%s'" % x, tags))
 
@@ -61,6 +64,7 @@ def run(root):
                     opts += tag_opts(data['keywords'])
                     opts += tag_opts(data['albums'])
                     opts += rating_opts(int(data['rating'] or 0))
+                    opts += title_opts(data['title'])
                     if len(opts) != 0:
                         exec_opts(opts +
                                   ['-overwrite_original_in_place', '-P'], img_file)
