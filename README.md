@@ -1,6 +1,9 @@
 # Photos Export
 A collection of python scripts to export photos from an Apple Photos database while preserving metadata and edits.
 
+## Newer Photos Libraries
+See: https://github.com/patrikhson/photo-export.
+
 ## Disclaimer
 While I tested this carefully with my photo library, as stated in [the license](LICENSE.txt):
 > This program is distributed in the hope that it will be useful,
